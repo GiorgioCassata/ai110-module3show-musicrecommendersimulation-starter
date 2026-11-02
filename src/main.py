@@ -15,19 +15,39 @@ from recommender import load_songs, recommend_songs
 def main() -> None:
     songs = load_songs("data/songs.csv") 
 
-    # Starter example profile
-    user_prefs = {"genre": "pop", "mood": "happy", "energy": 0.8}
+    # Taste profile: "Sunny Commuter" - upbeat, danceable, mostly electronic/produced
+    user_prefs = {
+        "genre": "indie pop",
+        "mood": "happy",
+        "energy": 0.72,
+        "valence": 0.78,
+        "tempo_bpm": 115,
+        "danceability": 0.75,
+        "likes_acoustic": False,
+    }
 
     recommendations = recommend_songs(user_prefs, songs, k=5)
+    print_recommendations(recommendations, heading="Top recommendations for Sunny Commuter")
 
-    print("\nTop recommendations:\n")
-    for rec in recommendations:
-        # You decide the structure of each returned item.
-        # A common pattern is: (song, score, explanation)
-        song, score, explanation = rec
-        print(f"{song['title']} - Score: {score:.2f}")
-        print(f"Because: {explanation}")
-        print()
+
+def print_recommendations(recommendations, heading: str) -> None:
+    """Prints ranked (song, score, explanation) results as a readable list."""
+    width = 56
+    print()
+    print("=" * width)
+    print(heading)
+    print("=" * width)
+
+    for rank, (song, score, explanation) in enumerate(recommendations, start=1):
+        title = f"{rank}. {song['title']}"
+        print(f"\n{title:<{width - 8}}{score:>6.2f}")
+        print(f"   {song['artist']} | {song['genre']} | {song['mood']}")
+
+        reasons = explanation.split("; ") if explanation else ["no strong matches"]
+        for reason in reasons:
+            print(f"   - {reason}")
+
+    print("\n" + "=" * width)
 
 
 if __name__ == "__main__":
